@@ -43,12 +43,12 @@ class DataStruct(object):
 
     def update_tensor(self, name: str, value: torch.Tensor):
         if name not in self._data_dict:
-            self._data_dict[name] = value.cpu().clone().detach()
+            self._data_dict[name] = value.clone().detach()
         else:
             if not isinstance(self._data_dict[name], torch.Tensor):
                 raise ValueError("{} is not a tensor.".format(name))
             self._data_dict[name] = torch.cat(
-                (self._data_dict[name], value.cpu().clone().detach()), dim=0
+                (self._data_dict[name], value.clone().detach()), dim=0
             )
 
     def __str__(self):
@@ -226,6 +226,8 @@ class Collector(object):
         """Get all the evaluation resource that been collected.
         And reset some of outdated resource.
         """
+        for key in self.data_struct._data_dict:
+            self.data_struct._data_dict[key] = self.data_struct._data_dict[key].cpu()
         returned_struct = copy.deepcopy(self.data_struct)
         for key in ["rec.topk", "rec.meanrank", "rec.score", "rec.items", "data.label"]:
             if key in self.data_struct:

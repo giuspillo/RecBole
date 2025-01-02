@@ -107,7 +107,13 @@ class NGCF(GeneralRecommender):
                 )
             )
         )
-        A._update(data_dict)
+
+        # ATTENTION: _update is no longer supported by scipy
+        # A._update(data_dict)
+        # here is the fixed version of the code
+        for (row, col), value in data_dict.items():
+            A[row, col] = value
+            
         # norm adj matrix
         sumArr = (A > 0).sum(axis=1)
         diag = (
